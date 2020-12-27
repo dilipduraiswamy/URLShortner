@@ -1,12 +1,14 @@
 package com.aeiou.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aeiou.service.FileRetriverService;
@@ -27,13 +29,22 @@ public class FileRetriver {
 	 *
 	 * @param fileName the file name
 	 * @return the file resource
+	 * @throws URISyntaxException
 	 */
 	@GetMapping(path = "/{fileName}")
-	@ResponseBody
-	public ResponseEntity<Resource> getFileResource(@PathVariable("fileName") String fileName) {
-		Resource file = fileRetriverService.loadFileAsResource(fileName);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-				.body(file);
+	public ResponseEntity<Object> getFileResource(@PathVariable("fileName") String fileName) throws URISyntaxException {
+		String orlUrl = fileRetriverService.loadFileAsUrl(fileName);
+		URI uri = new URI(orlUrl);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setLocation(uri);
+		return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
 	}
+
+//	@GetMapping(path = "/{fileName}")
+//	public ResponseEntity<Object>  getFileResource(@PathVariable("fileName") String fileName) throws URISyntaxException {
+//		URI yahoo = new URI("http://localhost:9090/v1/getFileByFileName?fileName=Webp.net-resizeimage-2.jpg");
+//	    HttpHeaders httpHeaders = new HttpHeaders();
+//	    httpHeaders.setLocation(yahoo);
+//	    return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+//	}
 }

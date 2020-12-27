@@ -26,4 +26,6 @@ public interface FileRetriverService {
 	 */
 	Path getFile(String filename);
 
+	String loadFileAsUrl(String shortFileName);
+
 }

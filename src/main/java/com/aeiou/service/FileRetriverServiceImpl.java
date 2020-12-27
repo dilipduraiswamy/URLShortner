@@ -79,4 +79,16 @@ public class FileRetriverServiceImpl implements FileRetriverService {
 		}
 	}
 
+	@Override
+	public String loadFileAsUrl(String shortFileName) {
+		String completeShortUrl = shortUrl + shortFileName;
+		UrlShortner urlShortnerFromDB = urlShortnerRepo.findByShortUrl(completeShortUrl);
+		if (urlShortnerFromDB != null) {
+			String fullUrl = urlShortnerFromDB.getUrl();
+			return fullUrl;
+		} else {
+			return null;
+		}
+	}
+
 }
