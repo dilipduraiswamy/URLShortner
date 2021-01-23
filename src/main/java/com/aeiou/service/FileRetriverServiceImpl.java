@@ -3,11 +3,13 @@ package com.aeiou.service;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.aeiou.entity.UrlShortner;
@@ -85,10 +87,27 @@ public class FileRetriverServiceImpl implements FileRetriverService {
 		UrlShortner urlShortnerFromDB = urlShortnerRepo.findByShortUrl(completeShortUrl);
 		if (urlShortnerFromDB != null) {
 			String fullUrl = urlShortnerFromDB.getUrl();
-			return fullUrl;
+			Integer noOfTimesDownloaded = urlShortnerFromDB.getNoOfTimesDownloaded();
+			Integer countToDownload = urlShortnerFromDB.getCountToDownload();
+			if (!urlShortnerFromDB.getIsActive()) {
+				return "FILE_IS_DISABLED";
+			} else if (countToDownload != null && countToDownload != 0 && noOfTimesDownloaded > countToDownload) {
+				return "LIMIT_EXCEEDED_TO_DOWNLOAD";
+			} else {
+				urlShortnerFromDB.setNoOfTimesDownloaded(noOfTimesDownloaded + 1);
+				urlShortnerFromDB.setLastDownloadedTime(new Date());
+				updateNoOfTimesDownloaded(urlShortnerFromDB);
+				return fullUrl;
+			}
+
 		} else {
 			return null;
 		}
+	}
+
+	@Async
+	private void updateNoOfTimesDownloaded(UrlShortner urlShortnerFromDB) {
+		urlShortnerRepo.save(urlShortnerFromDB);
 	}
 
 }

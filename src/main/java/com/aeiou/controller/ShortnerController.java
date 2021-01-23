@@ -33,7 +33,7 @@ public class ShortnerController {
 	 */
 	@PostMapping(path = "/shortUrl", consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<ShortnerResponse> shortUrl(@RequestBody final ShortnerRequest shortnerRequest) {
-		String shortUrl = shortnerService.shortenURL(shortnerRequest.getUrl(), shortnerRequest.getGenerateNewUrl());
+		String shortUrl = shortnerService.shortenURL(shortnerRequest);
 		ShortnerResponse shortnerResponse = new ShortnerResponse();
 		shortnerResponse.setShortUrl(shortUrl);
 		shortnerResponse.setMessage("Success");

@@ -1,5 +1,7 @@
 package com.aeiou.service;
 
+import com.aeiou.dto.ShortnerRequest;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Interface ShortnerService.
@@ -13,5 +15,5 @@ public interface ShortnerService {
 	 * @param generateNewUrl the generate new url
 	 * @return the string
 	 */
-	String shortenURL(String url,Boolean generateNewUrl);
+	String shortenURL(ShortnerRequest shortnerRequest);
 }
